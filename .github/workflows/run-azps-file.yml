@@ -1,0 +1,31 @@
+name: Azure PowerShell Action Demo -- file
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  id-token: write
+  contents: read
+  
+jobs:
+  RunPSFile:
+    runs-on: ubuntu-latest
+    steps:
+ 
+    - name: Check Out
+      uses: actions/checkout@v3
+
+    - name: Login Azure with OIDC
+      uses: azure/login@v1.4.6
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        enable-AzPSSession: true 
+        
+    - name: Run Azure PowerShell File
+      uses: azure/powershell@v1.2.0
+      with:
+        azPSVersion: "latest"
+        inlineScript: ./ps/demo.ps1
