@@ -22,7 +22,7 @@ jobs:
       run: | 
         $env:PSModulePath -split [IO.Path]::PathSeparator 
 
-    - name: Print Az Module
+    - name: List Az Module
       shell: pwsh
       run: | 
         Get-Module -ListAvailable Az | select Name, Version, Path
@@ -36,13 +36,17 @@ jobs:
           $env:PSModulePath -split [IO.Path]::PathSeparator 
           '------------------------ List Az Module -----------------------------'
           Get-Module -ListAvailable Az | select Name, Version, Path
+          '------------------------ List Current Az Module -----------------------------'
+          Get-Module Az | select Name, Version, Path
 
     - name: List Az Module with Azure PowerShell Action, 9.6.0
       uses: azure/powershell@v1.2.0
       with:
-        azPSVersion: "9.6.0"
+        azPSVersion: "9.2.0"
         inlineScript: |
           '------------------------ PSModulePath -------------------------------'
           $env:PSModulePath -split [IO.Path]::PathSeparator 
           '------------------------ List Az Module -----------------------------'
           Get-Module -ListAvailable Az | select Name, Version, Path
+          '------------------------ List Current Az Module -----------------------------'
+          Get-Module Az | select Name, Version, Path
