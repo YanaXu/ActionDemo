@@ -42,7 +42,7 @@ jobs:
     - name: List Az Module with Azure PowerShell Action, 9.6.0
       uses: azure/powershell@v1.2.0
       with:
-        azPSVersion: "9.2.0"
+        azPSVersion: "9.6.0"
         inlineScript: |
           '------------------------ PSModulePath -------------------------------'
           $env:PSModulePath -split [IO.Path]::PathSeparator 
