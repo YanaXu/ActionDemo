@@ -32,8 +32,9 @@ jobs:
       with:
         azPSVersion: "latest"
         inlineScript: |
+          '------------------------ PSModulePath -------------------------------'
           $env:PSModulePath -split [IO.Path]::PathSeparator 
-          '--------------------------------------------------------------------'
+          '------------------------ List Az Module -----------------------------'
           Get-Module -ListAvailable Az | select Name, Version, Path
 
     - name: List Az Module with Azure PowerShell Action, 9.6.0
@@ -41,6 +42,7 @@ jobs:
       with:
         azPSVersion: "9.6.0"
         inlineScript: |
+          '------------------------ PSModulePath -------------------------------'
           $env:PSModulePath -split [IO.Path]::PathSeparator 
-          '--------------------------------------------------------------------'
+          '------------------------ List Az Module -----------------------------'
           Get-Module -ListAvailable Az | select Name, Version, Path
