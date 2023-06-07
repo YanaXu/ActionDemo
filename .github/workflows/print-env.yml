@@ -20,8 +20,23 @@ jobs:
     - name: Print PS Module Paths
       shell: pwsh
       run: | 
-        $modulePaths = $env:PSModulePath -split [IO.Path]::PathSeparator 
-        Write-Host "---- PSModulePath ----"
-        $modulePaths | foreach {Write-Host $_}
-        Write-Host "---- List modules ----"
-        Get-Module -ListAvailable | select Name, Version, Path
+        $env:PSModulePath -split [IO.Path]::PathSeparator 
+
+    - name: Print PS Module Paths
+      shell: pwsh
+      run: | 
+        Get-Module -ListAvailable Az 
+
+    - name: Run Azure PowerShell File
+      uses: azure/powershell@v1.2.0
+      with:
+        azPSVersion: "latest"
+        inlineScript: |
+          Get-Module -ListAvailable Az
+
+    - name: Run Azure PowerShell File
+      uses: azure/powershell@v1.2.0
+      with:
+        azPSVersion: "9.6.0"
+        inlineScript: |
+          Get-Module -ListAvailable Az
