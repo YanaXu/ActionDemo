@@ -16,3 +16,8 @@ jobs:
       shell: pwsh
       run: | 
         dir env: 
+
+    - name: Print PS Module Paths
+      shell: pwsh
+      run: | 
+        $env:PSModulePath -split [IO.Path]::PathSeparator 
