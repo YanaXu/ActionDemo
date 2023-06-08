@@ -1,0 +1,47 @@
+name: Send Mail Test
+
+on: [push, workflow_dispatch]
+
+jobs:
+  SendMail:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: install node modules
+      run: |
+        npm install nodemailer
+
+    - name: Send Mail with default body
+      run: |
+        node ./js/sendMail.js
+      env: 
+        mail_sender: ${{ secrets.mail_sender }}
+        mail_receiver: ${{ secrets.mail_receiver }}
+        mail_pass: ${{ secrets.mail_pass }}
+
+    - id: get-mail-body
+      name: Prepare the mail body
+      run: |
+          body="<!DOCTYPE html><html><title>This is a mail example</title><head></head><body><h1>This is a mail example</h1><div>This is a example line.</div></body></html>"
+          delimiter="$(openssl rand -hex 8)"
+          echo "body<<$delimiter" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "$delimiter" >> $GITHUB_OUTPUT
+
+    - name: Send Mail
+      run: |
+        node ./js/sendMail.js
+      env: 
+        mail_sender: ${{ secrets.mail_sender }}
+        mail_receiver: ${{ secrets.mail_receiver }}
+        mail_pass: ${{ secrets.mail_pass }}
+        mail_subject: "Test Mail from GitHub Action"
+        mail_body: ${{ steps.get-mail-body.outputs.body }}
+
