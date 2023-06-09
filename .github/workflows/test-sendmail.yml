@@ -1,13 +1,16 @@
-name: Send Mail Test
+name: AZPS Service Issue Report Mail
 
 on: [push, workflow_dispatch]
 
 jobs:
-  SendMail:
+  SendIssueReportMail:
     runs-on: ubuntu-latest
     steps:
 
-    - uses: actions/checkout@v3
+    - name: checkout current repo
+      uses: actions/checkout@v3
+      with:
+        path: ghaction
     
     - name: Use Node.js
       uses: actions/setup-node@v3
@@ -18,30 +21,27 @@ jobs:
       run: |
         npm install nodemailer
 
-    - name: Send Mail with default body
-      run: |
-        node ./js/sendMail.js
-      env: 
-        mail_sender: ${{ secrets.mail_sender }}
-        mail_receiver: ${{ secrets.mail_receiver }}
-        mail_pass: ${{ secrets.mail_pass }}
+    - name: checkout azure-powershell repo
+      uses: actions/checkout@v3
+      with:
+        repository: Azure/azure-powershell
+        path: azure-powershell
 
-    - id: get-mail-body
-      name: Prepare the mail body
+    - name: Generate Issue Report
+      shell: pwsh
       run: |
-          body="<!DOCTYPE html><html><title>This is a mail example</title><head></head><body><h1>This is a mail example</h1><div>This is a example line.</div></body></html>"
-          delimiter="$(openssl rand -hex 8)"
-          echo "body<<$delimiter" >> $GITHUB_OUTPUT
-          echo "$body" >> $GITHUB_OUTPUT
-          echo "$delimiter" >> $GITHUB_OUTPUT
+        cd azure-powershell
+        ../ghaction/ps/generate_issue_report.ps1
+        ls azps_service_issue.html
+      env:
+        GH_TOKEN: ${{ github.token }}
 
     - name: Send Mail
       run: |
-        node ./js/sendMail.js
+        node ./ghaction/js/sendMail.js
       env: 
         mail_sender: ${{ secrets.mail_sender }}
         mail_receiver: ${{ secrets.mail_receiver }}
         mail_pass: ${{ secrets.mail_pass }}
-        mail_subject: "Test Mail from GitHub Action"
-        mail_body: ${{ steps.get-mail-body.outputs.body }}
-
+        mail_subject: "Azure PowerShell Service Issue Report"
+        mail_body_file: ./azure-powershell/azps_service_issue.html

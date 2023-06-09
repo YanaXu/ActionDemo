@@ -8,6 +8,7 @@ let receiver = process.env.mail_receiver;
 let pass = process.env.mail_pass;
 let subject = process.env.mail_subject;
 let body = process.env.mail_body;
+let bodyFile = process.env.mail_body_file;
 
 if (!host) {
     host = "smtp." + sender.split("@")[1];
@@ -24,12 +25,19 @@ let now = (new Date()).toISOString();
 console.log("now is %s", now);
 subject = subject + " " + now;
 
-if (!body) {
+if (!bodyFile && !body) {
     body = "<b>It's an empty mail.</b>";
-}
+} 
 
 async function main() {
     console.log("send from %s, to %s", sender, receiver);
+
+    if(bodyFile){
+        const { readFile } = require('fs/promises')    
+        body = await readFile(bodyFile, 'utf8')
+        
+        console.log("total report size: %s", body.length);
+    }
 
     let transporter = nodemailer.createTransport({
         host: host,
