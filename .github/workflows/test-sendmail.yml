@@ -1,11 +1,27 @@
 name: AZPS Service Issue Report Mail
 
-on: [push, workflow_dispatch]
+on:
+  issue_comment:
+    types: [created]
 
 jobs:
   SendIssueReportMail:
     runs-on: ubuntu-latest
+    if: github.event.issue.number == 1
     steps:
+
+    - name: Get User Mail
+      id: get-comment-user-mail
+      env:
+        GH_TOKEN: ${{ github.token }}
+        commentUser: ${{ github.event.comment.user.login }}
+      shell: pwsh
+      run: |
+        Write-Host "comment user is: " $env:commentUser
+        $commentUser = "/users/" + $env:commentUser
+        $commentUserMail = (gh api -H "Accept: application/vnd.github+json"  -H "X-GitHub-Api-Version: 2022-11-28" $commentUser | ConvertFrom-Json).email
+        Write-Host "comment user mail is: " $commentUserMail
+        echo "commentUserMail=$commentUserMail" >> $env:GITHUB_OUTPUT
 
     - name: checkout current repo
       uses: actions/checkout@v3
@@ -41,7 +57,7 @@ jobs:
         node ./ghaction/js/sendMail.js
       env: 
         mail_sender: ${{ secrets.mail_sender }}
-        mail_receiver: ${{ secrets.mail_receiver }}
+        mail_receiver: ${{ steps.get-comment-user-mail.outputs.commentUserMail }}
         mail_pass: ${{ secrets.mail_pass }}
         mail_subject: "Azure PowerShell Service Issue Report"
         mail_body_file: ./azure-powershell/azps_service_issue.html
