@@ -60,7 +60,7 @@ foreach($service in ($result.Keys | Sort-Object)){
 		echo "<li>&gt;90: ${serviceIssueCountGreaterThan90days}</li>" >> $outFile
 	}
 	if($serviceIssueCountGreaterThan30DaysLessThan90days -GT 0){
-		echo "<li>30 ~ 60: ${serviceIssueCountGreaterThan30DaysLessThan90days}</li>" >> $outFile
+		echo "<li>30~60: ${serviceIssueCountGreaterThan30DaysLessThan90days}</li>" >> $outFile
 	}
 	if($serviceIssueCountLessThan30Days -GT 0){
 		echo "<li>&lt;30: ${serviceIssueCountLessThan30Days}</li>" >> $outFile
@@ -69,7 +69,7 @@ foreach($service in ($result.Keys | Sort-Object)){
 	echo "</li>" >> $outFile
 	echo "</ul>" >> $outFile
 	
-	echo "<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:500px\">" >> $outFile
+	echo "<table border=""1"" cellpadding=""1"" cellspacing=""1"">" >> $outFile
 	echo "<tbody>" >> $outFile
 	# table header
 	echo "<tr><th>number</th><th>title</th><th>idle days</th>" >> $outFile
@@ -77,11 +77,7 @@ foreach($service in ($result.Keys | Sort-Object)){
 	foreach($serviceIssue in ($serviceResult | Sort-Object -Property notUpdatedDays -Descending)){
 		echo "<tr>" >> $outFile
 		
-		$number = $serviceIssue.number
-		$url = $serviceIssue.url
-		$title = $serviceIssue.title
 		$notUpdatedDays = $serviceIssue.notUpdatedDays
-		$issueUrl = $serviceIssue.notUpdatedDays
 		
 		$style = ""
 		if($notUpdatedDays -LE 30){
@@ -92,8 +88,8 @@ foreach($service in ($result.Keys | Sort-Object)){
 			$style = 'style="background-color:#e74c3c"'
 		}
 		
-		echo "<td><p>${number}</p></td>" >> $outFile
-		echo "<td><p><a href=\"${url}\">${title}</a></p></td>" >> $outFile
+		echo "<td><p>$($serviceIssue.number)</p></td>" >> $outFile
+		echo "<td><p><a href=""$($serviceIssue.url)"">$($serviceIssue.title)</a></p></td>" >> $outFile
 		echo "<td><p><span ${style}>${notUpdatedDays}</span></p></td>" >> $outFile
 		
 		echo "</tr>" >> $outFile
