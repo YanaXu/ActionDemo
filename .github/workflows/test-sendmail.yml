@@ -28,15 +28,6 @@ jobs:
       with:
         path: ghaction
     
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
-
-    - name: install node modules
-      run: |
-        npm install nodemailer
-
     - name: checkout azure-powershell repo
       uses: actions/checkout@v3
       with:
@@ -52,12 +43,21 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
 
-    - name: Send Mail
-      run: |
-        node ./ghaction/js/sendMail.js
+    - name: Post to Logic App to send the mail
+      shell: pwsh
       env: 
-        mail_sender: ${{ secrets.mail_sender }}
-        mail_receiver: ${{ steps.get-comment-user-mail.outputs.commentUserMail }}
-        mail_pass: ${{ secrets.mail_pass }}
-        mail_subject: "Azure PowerShell Service Issue Report"
-        mail_body_file: ./azure-powershell/azps_service_issue.html
+        uri: "${{ secrets.mail_uri }}"
+        receiver: "${{ steps.get-comment-user-mail.outputs.commentUserMail }}"
+      run: |
+        $title = "Azure PowerShell Service Issue Report"
+  
+        cd azure-powershell
+        $content=(Get-Content azps_service_issue.html -Raw -Encoding ascii)
+  
+        $body = @{}
+        $body["receiver"] = $env:receiver
+        $body["title"]= $title
+        $body["content"]= $content
+        $body = $body | ConvertTo-Json
+  
+        Invoke-WebRequest -Method Post -Uri $env:uri -ContentType "application/json" -Body "$body" -Debug -Verbose

@@ -1,6 +1,4 @@
-$allLabels = gh label list --limit 1000 --json name | ConvertFrom-Json
-
-$allServiceIssues = gh issue list --state open --limit 1000 --label 'Service Attention' --json number,title,url,labels,createdAt,updatedAt | ConvertFrom-Json
+$allServiceIssues = gh issue list --state open --limit 2000 --label 'Service Attention' --json number,title,url,labels,createdAt,updatedAt | ConvertFrom-Json
 
 Write-Host "Total service issues: " $allServiceIssues.Count
 
