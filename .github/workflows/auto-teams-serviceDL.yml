@@ -1,0 +1,16 @@
+name: Auto Send Teams Message
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  SendTeams:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
